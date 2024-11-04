@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET() {
   try {
-    const draftsDir = path.join(process.cwd(), 'drafts'); // Adjust this if drafts are in a different directory
+    const draftsDir = path.join(process.cwd(), 'drafts'); // Make sure this points to your drafts directory
 
     if (!fs.existsSync(draftsDir)) {
       return NextResponse.json([]); // Return an empty array if no drafts are available
@@ -17,7 +17,7 @@ export async function GET() {
         const content = fs.readFileSync(path.join(draftsDir, file), 'utf8');
         return JSON.parse(content);
       })
-      .filter(post => post.isDraft === true) // Include only drafts
+      .filter(post => post.isDraft === true) // Only include drafts
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     return NextResponse.json(drafts);
