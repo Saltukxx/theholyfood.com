@@ -12,11 +12,13 @@ export default function BlogPage() {
     const fetchPosts = async () => {
       try {
         const response = await fetch('/api/blog');
+        console.log('Fetching posts...');
         if (response.ok) {
           const data = await response.json();
+          console.log('Fetched posts:', data);
           setPosts(data);
         } else {
-          console.error('Failed to fetch blog posts');
+          console.error('Failed to fetch blog posts:', response.statusText);
         }
       } catch (error) {
         console.error('Error fetching blog posts:', error);

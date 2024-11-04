@@ -1,19 +1,22 @@
+// app/api/blog/route.js
+
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
 export async function GET() {
   try {
-    // Change the path to match your structure
+    // Define the directory where blog posts are stored
     const postsDir = path.join(process.cwd(), 'app', 'blog', 'posts');
     
-    // Create directory if it doesn't exist
+    // Create the directory if it doesn't exist
     if (!fs.existsSync(postsDir)) {
       fs.mkdirSync(postsDir, { recursive: true });
       console.log('Created posts directory');
-      return NextResponse.json([]);
+      return NextResponse.json([]); // Return an empty array if no posts are available
     }
 
+    // Read all files in the posts directory
     const files = fs.readdirSync(postsDir);
     console.log('Files in directory:', files);
 
@@ -22,6 +25,7 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
+    // Filter and process JSON files, excluding drafts and sorting by date
     const posts = files
       .filter(file => file.endsWith('.json'))
       .map(file => {
@@ -33,15 +37,15 @@ export async function GET() {
           return null;
         }
       })
-      .filter(Boolean)
-      .filter(post => !post.isDraft)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+      .filter(Boolean) // Remove any null values due to read errors
+      .filter(post => !post.isDraft) // Exclude drafts
+      .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date descending
 
     console.log('Found posts:', posts);
 
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Error in blog route:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
