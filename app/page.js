@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ContactForm from '@/app/components/ContactForm';
-import AppointmentForm from '@/app/components/AppointmentForm';
+import ContactForm from './components/ContactForm';
+import AppointmentForm from './components/AppointmentForm';  // Change this line to match the same pattern
 import { 
   Menu, 
   X, 
@@ -203,11 +203,11 @@ const TurkuazDietitianWebsite = () => {
                 )
               ))}
               <Link 
-                href="/randevu"
-                className="px-6 py-2.5 bg-gradient-to-r from-[#00CED1] to-[#00B4B7] text-white rounded-full hover:shadow-lg hover:shadow-[#00CED1]/20 transition-all duration-300 transform hover:scale-105"
-              >
-                Randevu Al
-              </Link>
+  href="/randevu"
+  className="px-6 py-2.5 bg-gradient-to-r from-[#00CED1] to-[#00B4B7] text-white rounded-full hover:shadow-lg hover:shadow-[#00CED1]/20 transition-all duration-300 transform hover:scale-105"
+>
+  Randevu Al
+</Link>
             </div>
 
             {/* Mobile Menu Button */}

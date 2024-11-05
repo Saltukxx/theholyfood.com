@@ -35,15 +35,37 @@ const AppointmentPage = () => {
     return dates;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send this data to your backend
-    console.log({
-      ...formData,
-      appointmentDate: selectedDate,
-      appointmentTime: selectedTime,
-    });
-    setIsSubmitted(true);
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'appointment',
+          adinizSoyadiniz: formData.name,
+          email: formData.email,
+          telefon: formData.phone,
+          gorusmeTipi: formData.type === 'initial' ? 'İlk Görüşme' : 'Kontrol',
+          selectedDate: selectedDate,
+          selectedTime: selectedTime
+        }),
+      });
+  
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsSubmitted(true);
+      } else {
+        alert('Bir hata oluştu, lütfen tekrar deneyin.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Bir hata oluştu, lütfen tekrar deneyin.');
+    }
   };
 
   if (isSubmitted) {

@@ -4,18 +4,7 @@ import nodemailer from 'nodemailer';
 export async function POST(request) {
   try {
     const body = await request.json();
-    
-    // Log for debugging
-    console.log('Received form data:', body);
-    console.log('Environment variables:', {
-      user: process.env.GMAIL_USER,
-      hasPassword: !!process.env.GMAIL_APP_PASSWORD
-    });
-
-    // Validate environment variables
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      throw new Error('Missing email configuration');
-    }
+    console.log('Received body:', body); // For debugging
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -25,26 +14,38 @@ export async function POST(request) {
       }
     });
 
-    // Test the connection
-    await transporter.verify();
+    let emailContent;
+    let subject;
 
-    const emailContent = `
-      <h2>Yeni İletişim Mesajı</h2>
-      <p><strong>Ad:</strong> ${body.adiniz}</p>
-      <p><strong>E-posta:</strong> ${body.email}</p>
-      <p><strong>Mesaj:</strong> ${body.mesajiniz}</p>
-    `;
+    // Check if it's an appointment submission
+    if (body.type === 'appointment') {
+      emailContent = `
+        <h2>Yeni Randevu Talebi</h2>
+        <p><strong>Ad Soyad:</strong> ${body.adinizSoyadiniz || ''}</p>
+        <p><strong>E-posta:</strong> ${body.email || ''}</p>
+        <p><strong>Telefon:</strong> ${body.telefon || ''}</p>
+        <p><strong>Görüşme Tipi:</strong> ${body.gorusmeTipi || ''}</p>
+        <p><strong>Seçilen Tarih:</strong> ${new Date(body.selectedDate).toLocaleDateString('tr-TR')}</p>
+        <p><strong>Seçilen Saat:</strong> ${body.selectedTime}</p>
+      `;
+      subject = `Yeni Randevu Talebi - ${body.adinizSoyadiniz || 'Yeni Randevu'}`;
+    } else {
+      // Regular contact form
+      emailContent = `
+        <h2>Yeni İletişim Mesajı</h2>
+        <p><strong>Ad:</strong> ${body.adiniz || ''}</p>
+        <p><strong>E-posta:</strong> ${body.email || ''}</p>
+        <p><strong>Mesaj:</strong> ${body.mesajiniz || ''}</p>
+      `;
+      subject = `Yeni İletişim Mesajı - ${body.adiniz || 'Yeni Mesaj'}`;
+    }
 
-    const mailOptions = {
+    await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: process.env.GMAIL_USER,
-      subject: `Yeni İletişim Mesajı - ${body.adiniz}`,
+      subject: subject,
       html: emailContent
-    };
-
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info);
+    });
 
     return NextResponse.json({ 
       success: true, 
@@ -52,12 +53,11 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Detailed error:', error);
-    
+    console.error('Error details:', error);
     return NextResponse.json(
       { 
         success: false, 
-        message: 'Email gönderilirken bir hata oluştu: ' + error.message
+        message: error.message || 'Email gönderilirken bir hata oluştu' 
       }, 
       { status: 500 }
     );
