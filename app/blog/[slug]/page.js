@@ -1,40 +1,73 @@
 'use client';
 
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 export default function BlogPostPage() {
-  const router = useRouter();
-  const { slug } = router.query;
+  const { slug } = useParams(); // Use useParams from next/navigation to access slug
   const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`/api/blog/${slug}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPost(data);
+        } else {
+          setError('Yazı bulunamadı');
+        }
+      } catch (error) {
+        setError('Bir hata oluştu. Yazı yüklenemedi.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (slug) {
-      fetch(`/api/blog/${slug}`)
-        .then((response) => {
-          if (!response.ok) throw new Error('Failed to fetch post');
-          return response.json();
-        })
-        .then((data) => setPost(data))
-        .catch((error) => setError(error.message));
+      fetchPost();
     }
   }, [slug]);
 
-  if (error) {
-    return <p>Error loading post: {error}</p>;
+  if (loading) {
+    return <p>Yükleniyor...</p>;
   }
 
-  if (!post) {
-    return <p>Loading...</p>;
+  if (error) {
+    return <p>{error}</p>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-        <p className="text-gray-600 mb-8">{post.date}</p>
-        <div className="text-lg text-gray-800">{post.content}</div>
+    <div className="container mx-auto py-8 px-4 md:px-8">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-teal-600 mb-4">{post.title}</h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">{post.excerpt}</p>
+      </div>
+
+      <div className="mb-8 text-sm text-gray-500">
+        <span className="block mb-2">
+          <span className="font-semibold">Kategori:</span> {post.category}
+        </span>
+        <span className="block mb-2">
+          <span className="font-semibold">Tarih:</span> {new Date(post.date).toLocaleDateString('tr-TR')}
+        </span>
+      </div>
+
+      <div className="content max-w-4xl mx-auto text-lg text-gray-700 leading-relaxed">
+        {post.content}
+      </div>
+
+      <div className="mt-12 text-center">
+        <h2 className="text-2xl font-bold text-teal-600 mb-4">Etiketler</h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          {post.tags.map((tag) => (
+            <span key={tag} className="bg-teal-100 text-teal-600 text-xs font-semibold px-4 py-2 rounded-full">
+              #{tag}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

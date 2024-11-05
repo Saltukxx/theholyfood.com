@@ -18,6 +18,7 @@ import {
   Sparkles,
   Calendar,
   Clock,
+  Clock3,
   User
 } from 'lucide-react';
 
@@ -32,6 +33,8 @@ const TurkuazDietitianWebsite = () => {
     email: '',
     message: ''
   });
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Scroll Effect
   useEffect(() => {
@@ -39,8 +42,7 @@ const TurkuazDietitianWebsite = () => {
       const position = window.scrollY;
       setScrolled(position > 20);
 
-      // Update active section based on scroll position
-      const sections = ['home', 'services', 'about', 'contact'];
+      const sections = ['home', 'services', 'about', 'blog', 'contact'];
       sections.forEach(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -56,11 +58,31 @@ const TurkuazDietitianWebsite = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fetch blog posts
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const response = await fetch("/api/blog");
+        if (response.ok) {
+          const data = await response.json();
+          setBlogPosts(data);
+        } else {
+          console.error("Blog gönderileri alınamadı:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Blog gönderileri alınırken hata:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
   // Form Handler
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    // Add your form submission logic here
   };
 
   // Navigation Links
@@ -68,8 +90,39 @@ const TurkuazDietitianWebsite = () => {
     { id: 'home', label: 'Ana Sayfa' },
     { id: 'services', label: 'Hizmetler' },
     { id: 'about', label: 'Hakkımda' },
-    { href: '/blog', label: 'Blog' },
+    { id: 'blog', label: 'Blog' },
     { id: 'contact', label: 'İletişim' }
+  ];
+
+  // Featured blog posts
+  const featuredPosts = [
+    {
+      id: 1,
+      title: "Sağlıklı Kilo Vermenin 10 Altın Kuralı",
+      excerpt: "Kalıcı ve sağlıklı kilo verme yolculuğunuzda size yardımcı olacak bilimsel temelli öneriler...",
+      category: "Kilo Yönetimi",
+      date: "2024-03-15",
+      readTime: "5 dk",
+      image: "/api/placeholder/400/250"
+    },
+    {
+      id: 2,
+      title: "Bağışıklık Sistemini Güçlendiren Besinler",
+      excerpt: "Doğal yollarla bağışıklığınızı güçlendirmek için tüketmeniz gereken süper besinler...",
+      category: "Bağışıklık",
+      date: "2024-03-10",
+      readTime: "4 dk",
+      image: "/api/placeholder/400/250"
+    },
+    {
+      id: 3,
+      title: "Sporcu Beslenmesinde Dikkat Edilmesi Gerekenler",
+      excerpt: "Performansınızı artırmak için beslenme düzeninizi nasıl optimize edebilirsiniz?",
+      category: "Spor Beslenmesi",
+      date: "2024-03-05",
+      readTime: "6 dk",
+      image: "/api/placeholder/400/250"
+    }
   ];
 
   // Services Data
@@ -115,7 +168,6 @@ const TurkuazDietitianWebsite = () => {
     { number: "10+", label: "Yıllık Deneyim" },
     { number: "%95", label: "Başarı Oranı" }
   ];
-
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
@@ -215,8 +267,9 @@ const TurkuazDietitianWebsite = () => {
           </div>
         )}
       </nav>
-{/* Hero Section */}
-<section id="home" className="relative pt-32 pb-20 px-6 overflow-hidden">
+
+      {/* Hero Section */}
+      <section id="home" className="relative pt-32 pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#00CED1]/10 rounded-full mb-8 animate-fade-in">
             <Sparkles className="w-4 h-4 text-[#00CED1]" />
@@ -260,9 +313,8 @@ const TurkuazDietitianWebsite = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00CED1] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float"></div>
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[#00B4B7] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float animation-delay-2000"></div>
       </section>
-
-      {/* Services Section */}
-      <section id="services" className="py-20 px-6 bg-gradient-to-b from-white to-[#F0FFFF]">
+{/* Services Section */}
+<section id="services" className="py-20 px-6 bg-gradient-to-b from-white to-[#F0FFFF]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
@@ -358,6 +410,119 @@ const TurkuazDietitianWebsite = () => {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section id="blog" className="py-20 px-6 bg-gradient-to-b from-white to-[#F0FFFF]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-[#00CED1] to-[#00B4B7] bg-clip-text text-transparent">
+                Sağlıklı Yaşam Blogu
+              </span>
+            </h2>
+            <p className="text-gray-600 mb-8">
+              En son beslenme önerileri, sağlıklı tarifler ve yaşam tarzı ipuçları
+            </p>
+          </div>
+
+          {/* Featured Posts */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold mb-8 text-gray-800">Öne Çıkan Yazılar</h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredPosts.map((post) => (
+                <div 
+                  key={post.id}
+                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 p-6"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm text-[#00CED1] bg-[#F0FFFF] px-3 py-1 rounded-full">
+                      {post.category}
+                    </span>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Clock3 className="w-4 h-4 mr-1" />
+                      {post.readTime}
+                    </div>
+                  </div>
+                  <h4 className="text-xl font-semibold mb-2 text-gray-800">
+                    {post.title}
+                  </h4>
+                  <p className="text-gray-600 mb-4 line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">
+                      {new Date(post.date).toLocaleDateString('tr-TR')}
+                    </span>
+                    <Link
+                      href={`/blog/${post.id}`}
+                      className="text-[#00CED1] hover:text-[#00B4B7] transition-colors flex items-center gap-1"
+                    >
+                      Devamını Oku
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Posts */}
+          <div>
+            <h3 className="text-2xl font-semibold mb-8 text-gray-800">Son Yazılar</h3>
+            {loading ? (
+              <div className="text-center py-12">
+                <p>Yükleniyor...</p>
+              </div>
+            ) : blogPosts.length === 0 ? (
+              <div className="text-center py-12">
+                <p>Henüz blog yazısı bulunmuyor.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-8">
+                {blogPosts.map((post) => (
+                  <article
+                    key={post.slug}
+                    className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm text-[#00CED1] bg-[#F0FFFF] px-3 py-1 rounded-full">
+                        {post.category}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {new Date(post.date).toLocaleDateString('tr-TR')}
+                      </span>
+                    </div>
+                    <h4 className="text-xl font-semibold mb-2 text-gray-800">
+                      {post.title}
+                    </h4>
+                    <p className="text-gray-600 mb-4">
+                      {post.excerpt}
+                    </p>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="text-[#00CED1] hover:text-[#00B4B7] transition-colors flex items-center gap-1"
+                    >
+                      Devamını Oku
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* View All Posts Button */}
+          <div className="text-center mt-12">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#00CED1] text-white rounded-lg hover:bg-[#00B4B7] transition-colors"
+            >
+              Tüm Yazıları Gör
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
       <section id="contact" className="py-20 px-6 bg-gradient-to-b from-[#F0FFFF] to-white">
         <div className="max-w-3xl mx-auto">
@@ -445,7 +610,6 @@ const TurkuazDietitianWebsite = () => {
               </div>
             </div>
           </div>
-
           <div className="mt-12 pt-8 border-t border-white/20 text-center text-white/80">
             <p>&copy; 2024 Dyt. Betül Ozan. Tüm hakları saklıdır.</p>
             <Link 
