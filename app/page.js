@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ContactForm from './components/ContactForm';
-import { 
+// In app/page.js
+import ContactForm from './components/Contactform'; // Note the lowercase 'f' in Contactformimport { 
   Menu, 
   X, 
   ChevronRight, 
