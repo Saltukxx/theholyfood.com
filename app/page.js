@@ -1,7 +1,8 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import ContactForm from '@/app/components/ContactForm';
+import AppointmentForm from '@/app/components/AppointmentForm';
 import { 
   Menu, 
   X, 
@@ -28,11 +29,6 @@ const TurkuazDietitianWebsite = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,11 +75,6 @@ const TurkuazDietitianWebsite = () => {
     fetchBlogPosts();
   }, []);
 
-  // Form Handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
 
   // Navigation Links
   const navLinks = [
@@ -523,51 +514,22 @@ const TurkuazDietitianWebsite = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 px-6 bg-gradient-to-b from-[#F0FFFF] to-white">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-[#00CED1] to-[#00B4B7] bg-clip-text text-transparent">
-                İletişime Geçin
-              </span>
-            </h2>
-            <p className="text-gray-600">Sorularınız için bize ulaşın</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <input
-                type="text"
-                placeholder="Adınız"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#00CED1] focus:ring-2 focus:ring-[#00CED1]/20 outline-none"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-              />
-              <input
-                type="email"
-                placeholder="E-posta"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#00CED1] focus:ring-2 focus:ring-[#00CED1]/20 outline-none"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
-            </div>
-            <textarea
-              placeholder="Mesajınız"
-              rows={4}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#00CED1] focus:ring-2 focus:ring-[#00CED1]/20 outline-none"
-              value={formData.message}
-              onChange={(e) => setFormData({...formData, message: e.target.value})}
-            />
-            <button 
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-[#00CED1] to-[#00B4B7] text-white rounded-lg hover:shadow-lg hover:shadow-[#00CED1]/20 transition-all duration-300"
-            >
-              Gönder
-            </button>
-          </form>
-        </div>
-      </section>
+{/* Contact Section */}
+<section id="contact" className="py-20 px-6 bg-gradient-to-b from-[#F0FFFF] to-white">
+  <div className="max-w-3xl mx-auto">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold mb-4">
+        <span className="bg-gradient-to-r from-[#00CED1] to-[#00B4B7] bg-clip-text text-transparent">
+          İletişime Geçin
+        </span>
+      </h2>
+      <p className="text-gray-600">Sorularınız için bize ulaşın</p>
+    </div>
+    
+    {/* Remove the old form and add the ContactForm component */}
+    <ContactForm />
+  </div>
+</section>
 
       {/* Footer */}
       <footer className="bg-[#00CED1] text-white py-16">
