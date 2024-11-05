@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ContactForm from './components/ContactForm';
-import AppointmentForm from './components/AppointmentForm';  // Change this line to match the same pattern
 import { 
   Menu, 
   X, 
